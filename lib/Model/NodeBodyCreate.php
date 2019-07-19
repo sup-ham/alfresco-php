@@ -61,7 +61,8 @@ class NodeBodyCreate implements ArrayAccess
         'relative_path' => 'string',
         'association' => '\Alfresco\Model\NodeBodyCreateAssociation',
         'secondary_children' => '\Alfresco\Model\ChildAssociationBody[]',
-        'targets' => '\Alfresco\Model\AssociationBody[]'
+        'targets' => '\Alfresco\Model\AssociationBody[]',
+        'file_data' => 'string',
     ];
 
     /**
@@ -76,7 +77,8 @@ class NodeBodyCreate implements ArrayAccess
         'relative_path' => null,
         'association' => null,
         'secondary_children' => null,
-        'targets' => null
+        'targets' => null,
+        'file_data' => null,
     ];
 
     public static function swaggerTypes()
@@ -101,7 +103,8 @@ class NodeBodyCreate implements ArrayAccess
         'relative_path' => 'relativePath',
         'association' => 'association',
         'secondary_children' => 'secondaryChildren',
-        'targets' => 'targets'
+        'targets' => 'targets',
+        'file_data' => 'filedata',
     ];
 
 
@@ -117,7 +120,8 @@ class NodeBodyCreate implements ArrayAccess
         'relative_path' => 'setRelativePath',
         'association' => 'setAssociation',
         'secondary_children' => 'setSecondaryChildren',
-        'targets' => 'setTargets'
+        'targets' => 'setTargets',
+        'file_data' => 'setFiledata',
     ];
 
 
@@ -133,7 +137,8 @@ class NodeBodyCreate implements ArrayAccess
         'relative_path' => 'getRelativePath',
         'association' => 'getAssociation',
         'secondary_children' => 'getSecondaryChildren',
-        'targets' => 'getTargets'
+        'targets' => 'getTargets',
+        'file_data' => 'getFiledata',
     ];
 
     public static function attributeMap()
@@ -175,6 +180,7 @@ class NodeBodyCreate implements ArrayAccess
         $this->container['association'] = isset($data['association']) ? $data['association'] : null;
         $this->container['secondary_children'] = isset($data['secondary_children']) ? $data['secondary_children'] : null;
         $this->container['targets'] = isset($data['targets']) ? $data['targets'] : null;
+        $this->container['file_data'] = isset($data['file_data']) ? $data['file_data'] : null;
     }
 
     /**
@@ -220,6 +226,15 @@ class NodeBodyCreate implements ArrayAccess
         return true;
     }
 
+    public function getFiledata()
+    {
+        return $this->container['file_data'];
+    }
+
+    public function setFiledata($data)
+    {
+        $this->container['file_data'] = $data;
+    }
 
     /**
      * Gets name

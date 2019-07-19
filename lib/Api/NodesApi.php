@@ -368,7 +368,11 @@ class NodesApi
         if (!is_null($_header_accept)) {
             $headerParams['Accept'] = $_header_accept;
         }
-        $headerParams['Content-Type'] = $this->apiClient->selectHeaderContentType(['application/json', 'multipart/form-data']);
+        if ($node_body_create->getFiledata()) {
+            $headerParams['Content-Type'] = 'multipart/form-data';
+        } else {
+            $headerParams['Content-Type'] = $this->apiClient->selectHeaderContentType(['application/json', 'multipart/form-data']);
+        }
 
         // query params
         if ($auto_rename !== null) {

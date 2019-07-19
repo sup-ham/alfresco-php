@@ -165,6 +165,12 @@ class ApiClient
             $postData = http_build_query($postData);
         } elseif ((is_object($postData) or is_array($postData)) and !in_array('Content-Type: multipart/form-data', $headers, true)) { // json model
             $postData = json_encode(\Alfresco\ObjectSerializer::sanitizeForSerialization($postData));
+        } elseif (is_object($postData) && method_exists($postData, 'attributeMap')) {
+            $_postData = [];
+            foreach ($postData::attributeMap() as $key => $field) {
+                $_postData[$field] = $postData[$key];
+            }
+            $postData = $_postData;
         }
 
         $url = $this->config->getHost() . $resourcePath;
