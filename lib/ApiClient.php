@@ -164,11 +164,12 @@ class ApiClient
         if ($postData and in_array('Content-Type: application/x-www-form-urlencoded', $headers, true)) {
             $postData = http_build_query($postData);
         } elseif ((is_object($postData) or is_array($postData)) and !in_array('Content-Type: multipart/form-data', $headers, true)) { // json model
+            $postData['auto_rename'] = null;
             $postData = json_encode(\Alfresco\ObjectSerializer::sanitizeForSerialization($postData));
         } elseif (is_object($postData) && method_exists($postData, 'attributeMap')) {
             $_postData = [];
-            foreach ($postData::attributeMap() as $key => $field) {
-                $_postData[$field] = $postData[$key];
+            foreach ($postData::attributeMap() as $key => $postField) {
+                $_postData[$postField] = is_bool($postData[$key]) ? 'true' : $postData[$key];
             }
             $postData = $_postData;
         }

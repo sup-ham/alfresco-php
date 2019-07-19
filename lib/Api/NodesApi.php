@@ -376,7 +376,7 @@ class NodesApi
 
         // query params
         if ($auto_rename !== null) {
-            $queryParams['autoRename'] = $this->apiClient->getSerializer()->toQueryValue($auto_rename);
+            $queryParams['autoRename'] = 'true';
         }
         // query params
         if (is_array($include)) {

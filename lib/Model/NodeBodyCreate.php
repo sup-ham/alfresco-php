@@ -63,6 +63,7 @@ class NodeBodyCreate implements ArrayAccess
         'secondary_children' => '\Alfresco\Model\ChildAssociationBody[]',
         'targets' => '\Alfresco\Model\AssociationBody[]',
         'file_data' => 'string',
+        'auto_rename' => 'bool',
     ];
 
     /**
@@ -79,6 +80,7 @@ class NodeBodyCreate implements ArrayAccess
         'secondary_children' => null,
         'targets' => null,
         'file_data' => null,
+        'auto_rename' => null,
     ];
 
     public static function swaggerTypes()
@@ -105,6 +107,7 @@ class NodeBodyCreate implements ArrayAccess
         'secondary_children' => 'secondaryChildren',
         'targets' => 'targets',
         'file_data' => 'filedata',
+        'auto_rename' => 'autoRename',
     ];
 
 
@@ -122,6 +125,7 @@ class NodeBodyCreate implements ArrayAccess
         'secondary_children' => 'setSecondaryChildren',
         'targets' => 'setTargets',
         'file_data' => 'setFiledata',
+        'auto_rename' => 'setAutoRename',
     ];
 
 
@@ -139,6 +143,7 @@ class NodeBodyCreate implements ArrayAccess
         'secondary_children' => 'getSecondaryChildren',
         'targets' => 'getTargets',
         'file_data' => 'getFiledata',
+        'auto_rename' => 'getAutoRename',
     ];
 
     public static function attributeMap()
@@ -224,6 +229,16 @@ class NodeBodyCreate implements ArrayAccess
             return false;
         }
         return true;
+    }
+
+    public function getAutoRename()
+    {
+        return $this->container['auto_rename'];
+    }
+
+    public function setAutoRename($auto_rename)
+    {
+        $this->container['auto_rename'] = (bool)$auto_rename;
     }
 
     public function getFiledata()
