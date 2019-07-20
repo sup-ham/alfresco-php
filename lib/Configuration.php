@@ -88,14 +88,7 @@ class Configuration
      *
      * @var string
      */
-    protected $host = 'https://localhost/alfresco/api/-default-/public/alfresco/versions/1';
-
-    /**
-     * The host for Search API
-     *
-     * @var string
-     */
-    protected $host_search = 'https://localhost/alfresco/api/-default-/public/search/versions/1';
+    protected $host = 'https://localhost/alfresco/api';
 
     /**
      * Timeout (second) of the HTTP request, by default set to 0, no timeout
@@ -190,8 +183,9 @@ class Configuration
      * @var bool
      */
     protected $allowEncoding = false;
+    private $apiUrl;
 
-    /**
+  /**
      * Constructor
      */
     public function __construct()
@@ -744,10 +738,19 @@ class Configuration
      * Set the API to run on Search API
      *
      * @return $this
+     * @deprecated
      */
     public static function setSearchApi()
     {
        $this->host = $this->host_search;
        return $this;
+    }
+
+    public function getApiUrl()
+    {
+        if (empty($this->apiUrl)) {
+            $this->apiUrl = $this->host .'/-default-/public/alfresco/versions/1';
+        }
+        return $this->apiUrl;
     }
 }

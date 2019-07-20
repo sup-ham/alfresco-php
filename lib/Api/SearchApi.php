@@ -59,11 +59,7 @@ class SearchApi
     {
         if ($apiClient === null) {
             $apiClient = new ApiClient();
-            if ($apiClient->getConfig()->getHost() === 'https://localhost/alfresco/api/-default-/public/alfresco/versions/1') {
-              $apiClient->setSearchApiConfig();
-            }
         }
-
         $this->apiClient = $apiClient;
     }
 
@@ -175,5 +171,10 @@ class SearchApi
 
             throw $e;
         }
+    }
+
+    public function getUrl()
+    {
+        return $this->getApiClient()->getConfig()->getHost() .'/-default-/public/search/versions/1';
     }
 }

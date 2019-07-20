@@ -47,6 +47,8 @@ class ApiClient
     public static $PUT = "PUT";
     public static $DELETE = "DELETE";
 
+    public $api;
+
     /**
      * Configuration
      *
@@ -90,6 +92,7 @@ class ApiClient
      * Set the config to the Search API
      *
      * @return $this
+     * @deprecated
      */
     public function setSearchApiConfig()
     {
@@ -174,7 +177,12 @@ class ApiClient
             $postData = $_postData;
         }
 
-        $url = $this->config->getHost() . $resourcePath;
+        if (method_exists($this->api, 'getUrl')) {
+            $url = $this->api->getUrl();
+        } else {
+            $url = $this->config->getApiUrl();
+        }
+        $url .= $resourcePath;
 
         $curl = curl_init();
         // set timeout, if needed
