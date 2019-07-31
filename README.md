@@ -10,21 +10,10 @@ PHP 5.4.0 and later
 
 To install the bindings via [Composer](http://getcomposer.org/), add the following to `composer.json`:
 
+```bash
+composer config repos.alfres vcs https://github.com/sup-ham/alfresco-api-php-client.git
+composer require supham/alfresco-api:@dev --prefer-dist -o
 ```
-{
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/rhuanbarreto/alfresco-api-php-client.git"
-    }
-  ],
-  "require": {
-    "/": "*@dev"
-  }
-}
-```
-
-Then run `composer install`
 
 ### Manual Installation
 
