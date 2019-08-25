@@ -1,5 +1,5 @@
 {
-    "name": "supham/alfresco-api",
+    "name": "supham/alfresco",
     "description": "",
     "keywords": [
         "swagger",
@@ -16,7 +16,7 @@
         }
     ],
     "dist": {
-        "url": "https://github.com/sup-ham/alfresco-api-php-client/archive/master.zip",
+        "url": "https://github.com/sup-ham/alfresco-php-cliet-api/archive/master.zip",
         "type": "zip"
     },
     "require": {
@@ -25,18 +25,14 @@
         "ext-json": "*",
         "ext-mbstring": "*"
     },
-    "require-dev": {
-        "phpunit/phpunit": "~4.8",
-        "satooshi/php-coveralls": "~1.0",
-        "squizlabs/php_codesniffer": "~2.6",
-        "friendsofphp/php-cs-fixer": "~1.12"
-    },
     "autoload": {
         "psr-4": {
-            "Alfresco\\" : "lib/"
+            "Alfresco\\" : "src/lib"
         }
     },
-    "autoload-dev": {
-        "psr-4": { "Swagger\\Client\\" : "test/" }
+    "extra": {
+        "branch-alias": {
+            "dev-master":"master-dev"
+        }
     }
 }
