@@ -20,7 +20,7 @@
         "type": "zip"
     },
     "require": {
-        "php": ">=5.4",
+        "php": ">7.1",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-mbstring": "*"
@@ -32,7 +32,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master":"master-dev"
+            "1.0.0": "dev-master"
         }
     }
 }

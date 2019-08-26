@@ -29,6 +29,7 @@
 
 namespace Alfresco;
 
+defined('JSON_UNESCAPED_LINE_TERMINATORS') or define(JSON_UNESCAPED_LINE_TERMINATORS, 2048);
 /**
  * ApiClient Class Doc Comment
  *
@@ -142,39 +143,39 @@ class ApiClient
      * @param string $method       method to call
      * @param array  $queryParams  parameters to be place in query URL
      * @param array  $postData     parameters to be placed in POST body
-     * @param array  $headerParams parameters to be place in request header
+     * @param array  $headers parameters to be place in request header
      * @param string $responseType expected response type of the endpoint
      * @param string $endpointPath path to method endpoint before expanding parameters
      *
      * @throws \Alfresco\ApiException on a non 2xx response
      * @return mixed
      */
-    public function callApi($resourcePath, $method, $queryParams, $postData, $headerParams, $responseType = null, $endpointPath = null)
+    public function callApi($resourcePath, $method, $queryParams, $postData, $headers, $responseType = null, $endpointPath = null)
     {
-        $headers = [];
+        $curl = curl_init();
 
         // construct the http header
-        $headerParams = array_merge(
+        $headers = array_merge(
             (array)$this->config->getDefaultHeaders(),
-            (array)$headerParams
+            (array)$headers
         );
 
-        foreach ($headerParams as $key => $val) {
-            $headers[] = "$key: $val";
-        }
-
         // form data
-        if ($postData and in_array('Content-Type: application/x-www-form-urlencoded', $headers, true)) {
+        if ($postData)
+        {
+          $contentType = $headers['Content-Type'];
+          if ($contentType === 'application/x-www-form-urlencoded') {
             $postData = http_build_query($postData);
-        } elseif ((is_object($postData) or is_array($postData)) and !in_array('Content-Type: multipart/form-data', $headers, true)) { // json model
+
+          } elseif ($contentType !== 'multipart/form-data') {
+            // json model
             $postData['auto_rename'] = null;
-            $postData = json_encode(\Alfresco\ObjectSerializer::sanitizeForSerialization($postData));
-        } elseif (is_object($postData) && method_exists($postData, 'attributeMap')) {
-            $_postData = [];
-            foreach ($postData::attributeMap() as $key => $postField) {
-                $_postData[$postField] = is_bool($postData[$key]) ? 'true' : $postData[$key];
-            }
-            $postData = $_postData;
+            $postData = json_encode(\Alfresco\ObjectSerializer::sanitizeForSerialization($postData), JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_LINE_TERMINATORS|JSON_UNESCAPED_UNICODE);
+
+          } else {
+            list($postData, $contentType) = $this->buildMultipartFormdata($postData);
+            $headers['Content-Type'] = $contentType;
+          }
         }
 
         if (method_exists($this->api, 'getUrl')) {
@@ -184,7 +185,6 @@ class ApiClient
         }
         $url .= $resourcePath;
 
-        $curl = curl_init();
         // set timeout, if needed
         if ($this->config->getCurlTimeout() !== 0) {
             curl_setopt($curl, CURLOPT_TIMEOUT, $this->config->getCurlTimeout());
@@ -197,6 +197,9 @@ class ApiClient
         // return the result on success, rather than just true
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
+        foreach ($headers as $key => $val) {
+            $headers[] = "$key: $val";
+        }
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
         // disable SSL verification, if needed
@@ -229,25 +232,32 @@ class ApiClient
             curl_setopt($curl, CURLOPT_ENCODING, '');
         }
 
-        if ($method === self::$POST) {
-            curl_setopt($curl, CURLOPT_POST, true);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
-        } elseif ($method === self::$HEAD) {
-            curl_setopt($curl, CURLOPT_NOBODY, true);
-        } elseif ($method === self::$OPTIONS) {
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "OPTIONS");
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
-        } elseif ($method === self::$PATCH) {
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PATCH");
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
-        } elseif ($method === self::$PUT) {
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
-        } elseif ($method === self::$DELETE) {
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
-        } elseif ($method !== self::$GET) {
-            throw new ApiException('Method ' . $method . ' is not recognized.');
+        if (is_resource($postData)) {
+            curl_setopt($curl, CURLOPT_PUT, 1);
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($curl, CURLOPT_INFILE, $postData);
+
+        } else {
+            if ($method === self::$POST) {
+                curl_setopt($curl, CURLOPT_POST, true);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
+            } elseif ($method === self::$HEAD) {
+                curl_setopt($curl, CURLOPT_NOBODY, true);
+            } elseif ($method === self::$OPTIONS) {
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "OPTIONS");
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
+            } elseif ($method === self::$PATCH) {
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PATCH");
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
+            } elseif ($method === self::$PUT) {
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
+            } elseif ($method === self::$DELETE) {
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
+            } elseif ($method !== self::$GET) {
+                throw new ApiException('Method ' . $method . ' is not recognized.');
+            }
         }
         curl_setopt($curl, CURLOPT_URL, $url);
 
@@ -256,7 +266,14 @@ class ApiClient
 
         // debugging for curl
         if ($this->config->getDebug()) {
-            error_log("[DEBUG] HTTP Request body  ~BEGIN~".PHP_EOL.print_r($postData, true).PHP_EOL."~END~".PHP_EOL, 3, $this->config->getDebugFile());
+            if (is_resource($postData)) {
+              $debugData = stream_get_contents($postData);
+              rewind($postData);
+            } else {
+              $debugData = $postData;
+            }
+
+            error_log("[DEBUG] HTTP Request body  ~BEGIN~".PHP_EOL.print_r($debugData, true).PHP_EOL."~END~".PHP_EOL, 3, $this->config->getDebugFile());
 
             curl_setopt($curl, CURLOPT_VERBOSE, 1);
             curl_setopt($curl, CURLOPT_STDERR, fopen($this->config->getDebugFile(), 'a'));
@@ -269,6 +286,8 @@ class ApiClient
 
         // Make the request
         $response = curl_exec($curl);
+        is_resource($postData) && fclose($postData);
+
         $http_header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $http_header = $this->httpParseHeaders(substr($response, 0, $http_header_size));
         $http_body = substr($response, $http_header_size);
@@ -318,6 +337,61 @@ class ApiClient
             );
         }
         return [$data, $response_info['http_code'], $http_header];
+    }
+
+    /**
+     * For safe multipart POST request for PHP5.3 ~ PHP 5.4.
+     *
+     * @param object $data
+     * @return array [resource, content-type+boundary]
+     * @see https://www.php.net/manual/en/class.curlfile.php#115161
+     */
+    public function buildMultipartFormdata($data) {
+        $postDataFile = tmpfile();
+        // invalid characters for "name" and "filename"
+        $disallow = array("\0", "\"", "\r", "\n");
+        $boundary = 'X-------------------------'. sha1(rand(11111, 99999) . time() . uniqid());
+
+        foreach ($data::attributeMap() as $key => $postName) {
+            $filename = $type = null;
+            $postName = str_replace($disallow, "_", $postName);
+            $value = $data[$key];
+            fwrite($postDataFile, "--$boundary\r\n");
+
+            if ($value instanceof \CURLFile && is_readable($value->name)) {
+              $filename = basename($value->name);
+              $type = $value->mime;
+              $value = fopen($value->name, 'r');
+
+            } elseif (is_array($value)) {
+              $filename = isset($value['filename']) ? $value['filename'] : null;
+              $type = isset($value['mime']) ? $value['mime'] : null;
+              $value = isset($value['stream']) ? $value['stream'] : null;
+
+            } elseif (is_string($value) && is_file($value) && is_readable($value)) {
+              $filename = basename($value);
+              $value = fopen($value, 'r');
+            }
+
+            if (is_resource($value)) {
+              $type && $type = "Content-Type: $type\r\n";
+              $filename OR $filename = sha1(rand(11111, 99999) . time() . uniqid());
+              fwrite($postDataFile, "Content-Disposition: form-data; name=\"$postName\"; filename=\"$filename\"\r\n$type\r\n");
+              stream_copy_to_stream($value, $postDataFile);
+              fclose($value);
+
+            } else {
+              fwrite($postDataFile, "Content-Disposition: form-data; name=\"$postName\"\r\n\r\n$value");
+            }
+            fwrite($postDataFile, "\r\n");
+        }
+
+        // add final boundary
+        fwrite($postDataFile, "--$boundary--");
+        rewind($postDataFile);
+        $type = "multipart/form-data; boundary=\"$boundary\"";
+
+        return [$postDataFile, $type];
     }
 
     /**
