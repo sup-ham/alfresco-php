@@ -389,6 +389,7 @@ class ApiClient
               fclose($value);
 
             } else {
+              is_bool($value) && $value = $value ? 'true' : 'false';
               fwrite($postDataFile, "Content-Disposition: form-data; name=\"$postName\"\r\n\r\n$value");
             }
             fwrite($postDataFile, "\r\n");
