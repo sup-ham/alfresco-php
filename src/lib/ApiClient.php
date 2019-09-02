@@ -173,8 +173,16 @@ class ApiClient
             $postData = json_encode(\Alfresco\ObjectSerializer::sanitizeForSerialization($postData), JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_LINE_TERMINATORS|JSON_UNESCAPED_UNICODE);
 
           } else {
-            list($postData, $contentType) = $this->buildMultipartFormdata($postData);
-            $headers['Content-Type'] = $contentType;
+            //if ($postData['file_data'] instanceof \CURLFile) {
+              //$_postData = [];
+              //foreach ($postData::attributeMap() as $key => $postField) {
+              //    $_postData[$postField] = is_bool($postData[$key]) ? 'true' : $postData[$key];
+              //}
+              //$postData = $_postData;
+            //} else {
+              list($postData, $contentType) = $this->buildMultipartFormdata($postData);
+              $headers['Content-Type'] = $contentType;
+            //}
           }
         }
 
