@@ -267,6 +267,13 @@ class ApiClient
                 throw new ApiException('Method ' . $method . ' is not recognized.');
             }
         }
+
+        if ($responseType === 'stream') {
+          $stream = \tmpfile();
+          $data = \tmpfile();
+          curl_setopt($curl, CURLOPT_FILE, $stream);
+        }
+
         curl_setopt($curl, CURLOPT_URL, $url);
 
         // Set user agent
@@ -322,14 +329,20 @@ class ApiClient
             $exception->setResponseObject($response_info);
             throw $exception;
         } elseif ($response_info['http_code'] >= 200 && $response_info['http_code'] <= 299) {
-            // return raw body if response is a file
-            if ($responseType === '\SplFileObject' || $responseType === 'string') {
-                return [$http_body, $response_info['http_code'], $http_header];
-            }
+            if ($responseType === 'stream') {
+                rewind($stream);
+                stream_copy_to_stream($stream, $data, -1, $http_header_size);
+                rewind($data);
 
-            $data = json_decode($http_body);
-            if (json_last_error() > 0) { // if response is a string
+            // return raw body if response is a file
+            } elseif ($responseType === '\SplFileObject' || $responseType === 'string') {
                 $data = $http_body;
+
+            } else {
+              $data = json_decode($http_body);
+              if (json_last_error() > 0) { // if response is a string
+                $data = $http_body;
+              }
             }
         } else {
             $data = json_decode($http_body);

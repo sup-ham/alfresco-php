@@ -246,6 +246,9 @@ class NodeBodyCreate implements ArrayAccess
         return $this->container['file_data'];
     }
 
+    /**
+     * @param array|resource|\CurlFile $data if array, use keys [stream, filename, mime]
+     */
     public function setFiledata($data)
     {
         $this->container['file_data'] = $data;
