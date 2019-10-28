@@ -16,7 +16,7 @@
         }
     ],
     "dist": {
-        "url": "https://github.com/sup-ham/alfresco-php-cliet-api/archive/master.zip",
+        "url": "https://github.com/sup-ham/alfresco-api-php-client/archive/master.zip",
         "type": "zip"
     },
     "require": {
