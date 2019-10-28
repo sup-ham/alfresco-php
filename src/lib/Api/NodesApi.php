@@ -983,7 +983,7 @@ class NodesApi
      * @param bool $attachment **true** enables a web browser to download the file as an attachment. **false** means a web browser may preview the file in a new tab or window, but not download the file.  You can only set this parameter to **false** if the content type of the file is in the supported list; for example, certain image files and PDF files.  If the content type is not supported for preview, then a value of **false**  is ignored, and the attachment will be returned in the response. (optional, default to true)
      * @param \DateTime $if_modified_since Only returns the content if it has been modified since the date provided. Use the date format defined by HTTP. For example, &#x60;Wed, 09 Mar 2016 16:56:34 GMT&#x60;. (optional)
      * @throws \Alfresco\ApiException on non-2xx response
-     * @return void
+     * @return resource stream http response body
      */
     public function getNodeContent($node_id, $attachment = 'true', $if_modified_since = null)
     {
@@ -1000,7 +1000,7 @@ class NodesApi
      * @param bool $attachment **true** enables a web browser to download the file as an attachment. **false** means a web browser may preview the file in a new tab or window, but not download the file.  You can only set this parameter to **false** if the content type of the file is in the supported list; for example, certain image files and PDF files.  If the content type is not supported for preview, then a value of **false**  is ignored, and the attachment will be returned in the response. (optional, default to true)
      * @param \DateTime $if_modified_since Only returns the content if it has been modified since the date provided. Use the date format defined by HTTP. For example, &#x60;Wed, 09 Mar 2016 16:56:34 GMT&#x60;. (optional)
      * @throws \Alfresco\ApiException on non-2xx response
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of resource stream, HTTP status code, HTTP response headers (array of strings)
      */
     public function getNodeContentWithHttpInfo($node_id, $attachment = 'true', $if_modified_since = null)
     {
@@ -1055,11 +1055,11 @@ class NodesApi
                 $queryParams,
                 $httpBody,
                 $headerParams,
-                null,
+                'stream',
                 '/nodes/{nodeId}/content'
             );
 
-            return [null, $statusCode, $httpHeader];
+            return [$response, $statusCode, $httpHeader];
         } catch (ApiException $e) {
             switch ($e->getCode()) {
                 default:

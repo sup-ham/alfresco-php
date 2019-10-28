@@ -364,7 +364,7 @@ class ApiClient
      * For safe multipart POST request for PHP5.3 ~ PHP 5.4.
      *
      * @param object $data
-     * @return array [resource, content-type+boundary]
+     * @return array of [resource, definition (content-type; boundary)]
      * @see https://www.php.net/manual/en/class.curlfile.php#115161
      */
     public function buildMultipartFormdata($data) {
