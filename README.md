@@ -12,7 +12,7 @@ To install the bindings via [Composer](http://getcomposer.org/), add the followi
 
 ```bash
 composer config repos.alfres vcs https://github.com/sup-ham/alfresco-api-php-client.git
-composer require supham/alfresco:* --prefer-dist -o -vvv
+composer require supham/alfresco:@dev --prefer-dist -o -vvv
 ```
 
 ### Manual Installation
