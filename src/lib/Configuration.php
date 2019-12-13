@@ -88,7 +88,7 @@ class Configuration
      *
      * @var string
      */
-    protected $host = 'https://localhost/alfresco/api';
+    protected $host = 'https://localhost/alfresco/api/';
 
     /**
      * Timeout (second) of the HTTP request, by default set to 0, no timeout
@@ -365,7 +365,7 @@ class Configuration
      */
     public function setHost($host)
     {
-        $this->host = $host;
+        $this->host = rtrim($host, '/'). '/';
         return $this;
     }
 
@@ -749,7 +749,7 @@ class Configuration
     public function getApiUrl()
     {
         if (empty($this->apiUrl)) {
-            $this->apiUrl = $this->host .'/-default-/public/alfresco/versions/1';
+            $this->apiUrl = $this->host .'-default-/public/alfresco/versions/1';
         }
         return $this->apiUrl;
     }
