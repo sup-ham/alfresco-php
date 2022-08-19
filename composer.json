@@ -1,22 +1,9 @@
 {
-    "name": "supham/alfresco",
+    "name": "yus-ham/alfresco",
     "description": "",
-    "keywords": [
-        "swagger",
-        "php",
-        "sdk",
-        "api"
-    ],
-    "homepage": "http://swagger.io",
-    "license": "proprietary",
-    "authors": [
-        {
-            "name": "Swagger and contributors",
-            "homepage": "https://github.com/swagger-api/swagger-codegen"
-        }
-    ],
+    "license": "MIT",
     "dist": {
-        "url": "https://github.com/sup-ham/alfresco-api-php-client/archive/master.zip",
+        "url": "https://github.com/yus-ham/alfresco-api-php-client/archive/master.zip",
         "type": "zip"
     },
     "require": {
