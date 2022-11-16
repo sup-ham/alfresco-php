@@ -186,7 +186,7 @@ class ApiClient
           }
         }
 
-        if (method_exists($this->api, 'getUrl')) {
+        if ($this->api && method_exists($this->api, 'getUrl')) {
             $url = $this->api->getUrl();
         } else {
             $url = $this->config->getApiUrl();
